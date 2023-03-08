@@ -35,6 +35,37 @@ login: elastic
 ww: qe=OsH_+UIdvbJq3MFsa
 
 
+input {
+  beats {
+    port => 5044
+  }
+}
+filter {
+  if [type] == "syslog" {
+     grok {
+        match => { "message" => "%{SYSLOGLINE}" }
+  }
+     date {
+        match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss" ]
+     }
+  }
+}
+output {
+  elasticsearch {
+    hosts => ["https://127.0.0.1:9200"]
+    user => "elastic"
+    password => "Ae=52Dc2nUH7ORXPA6ZX"
+    cacert => "/etc/elasticsearch/certs/http_ca.crt"
+    ssl_certificate_verification => false
+    index => "%{[@metadata][beat]}-%{+YYYY.MM.dd}"
+  }
+}
+
+"suricate-%{+YYYY.MM.dd}"
+
+" miste in beats.conf
+
+
 
 
 

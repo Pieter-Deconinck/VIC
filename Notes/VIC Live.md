@@ -87,3 +87,5 @@ elasticsearch step 4 gevolgd
 
 elasticsearch wachtwoord: vCEJMjH5FQRxoo*1TehC
 
+
+
