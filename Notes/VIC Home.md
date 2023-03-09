@@ -13,6 +13,9 @@ Now just enable Filebeat and Metricbeats with
 `sudo filebeat modules enable system`
 `sudo metricbeat modules enable logstash`
 
+Add the password to `/etc/logstash/conf.d/beats.conf`
+and restart the vm
+
 And that's it your all done and can explore your ELK stack now
 
 extra: You can find the elasticsearch superuser password in /home/vagrant/installationELK.log 
@@ -37,7 +40,7 @@ ww: qe=OsH_+UIdvbJq3MFsa
 
 input {
   beats {
-    port => 5044
+    port => "5044"
   }
 }
 filter {
@@ -68,5 +71,13 @@ output {
 
 
 
+Current state: 
 
+logstash still cant connect with elastic because of certificate issues
+if logstash can connect there is probably and error in the logstash.yml file
+
+trying to disable cert so logstash can connect
+
+usefull command for logstash logs
+`sudo journalctl -u logstash | tail -n 100`
 

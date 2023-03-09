@@ -41,7 +41,7 @@ systemctl restart elasticsearch
 cat <<EOT >> /etc/logstash/conf.d/beats.conf
 input {
   beats {
-    port => 5044
+    port => "5044"
   }
 }
 filter {
@@ -56,8 +56,12 @@ filter {
 }
 output {
   elasticsearch {
-    hosts => ["127.0.0.1:9200"]
-    index => "%{[@metadata][beat]}-%{+YYYY.MM.dd}"
+    hosts => ["https://127.0.0.1:9200"]
+    user => "elastic"
+    password => ""
+    cacert => "/etc/elasticsearch/certs/http_ca.crt"
+    ssl_certificate_verification => false
+    index => "%{[@metadata][targer_index]}"
   }
 }
 EOT
