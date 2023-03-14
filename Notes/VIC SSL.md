@@ -58,10 +58,15 @@ ttps://www.elastic.co/guide/en/kibana/current/deb.html
 # Extra extra
 
 create /etc/logstash/certs and copy the http_ca.crt file from elasticsearch
-and link it correctly in logstash, then turn off filebeat and metricbeat (disable)
+and link it correctly in beats, then turn off filebeat and metricbeat (disable)
 and reboot. then turn on filebeat and metricbeat
 
 Metricbeat seems able to connect but filebeat doesnt 
+
+stopped both metricbeat and filebeat
+went into filebeat/modules.d/logstash.yml
+and enabled both settings in that file
+started up filebeat, it now seems to run fine
 
 input {
   beats {
