@@ -9,18 +9,38 @@ Then copy this token into kibana on localhost:5601
 And then get the verification code with  
 `sudo /usr/share/kibana/bin/kibana-verification-code`
 
-Now just enable Filebeat and Metricbeats with
-`sudo filebeat modules enable system`
-`sudo metricbeat modules enable logstash`
+Open `/etc/kibana/kibana.yml`  
+remove https -> http
+
+open `/etc/elasticsearch/elasticsearch.yml`  
+Change http.ssl and transport.ssl to false  
 
 Add the password to `/etc/logstash/conf.d/beats.conf`
-and restart the vm
 
+reboot the vm
+
+Now just enable Filebeat and Metricbeats with
+`sudo filebeat modules enable logstash`
+`sudo metricbeat modules enable logstash`
+
+Open kibana and go to check indexmanagement for suricate  
+then go to discover where you can create your own view
+for testing I used name: `test`  
+and the current date: `*3.14`
+
+I then also made a view in the dasboard that with agent.type.keyword
 And that's it your all done and can explore your ELK stack now
 
-extra: You can find the elasticsearch superuser password in /home/vagrant/installationELK.log 
-       Also needed to add more Ram power
+# Extra
 
+You can find the elasticsearch superuser password in /home/vagrant/installationELK.log
+
+Kibana login
+user: elastic
+ww: found in installlog
+
+usefull command for logstash logs
+`sudo journalctl -u logstash | tail -n 100`
 
 
 Many thanks to:
@@ -34,10 +54,8 @@ https://www.elastic.co/guide/en/logstash/current/installing-logstash.html
 ttps://www.elastic.co/guide/en/kibana/current/deb.html
 
 
-login: elastic
-ww: qe=OsH_+UIdvbJq3MFsa
 
-
+# Extra extra
 input {
   beats {
     port => "5044"
@@ -60,24 +78,6 @@ output {
     password => "Ae=52Dc2nUH7ORXPA6ZX"
     cacert => "/etc/elasticsearch/certs/http_ca.crt"
     ssl_certificate_verification => false
-    index => "%{[@metadata][beat]}-%{+YYYY.MM.dd}"
+    index => "suricate-%{+YYYY.MM.dd}"
   }
 }
-
-"suricate-%{+YYYY.MM.dd}"
-
-" miste in beats.conf
-
-
-
-
-Current state: 
-
-logstash still cant connect with elastic because of certificate issues
-if logstash can connect there is probably and error in the logstash.yml file
-
-trying to disable cert so logstash can connect
-
-usefull command for logstash logs
-`sudo journalctl -u logstash | tail -n 100`
-

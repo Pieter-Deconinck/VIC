@@ -44,12 +44,24 @@ input {
     port => "5044"
   }
 }
+filter {
+  if [type] == "syslog" {
+     grok {
+        match => { "message" => "%{SYSLOGLINE}" }
+  }
+     date {
+        match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss" ]
+     }
+  }
+}
 output {
   elasticsearch {
-    hosts => ["http://127.0.0.1:9200"]
+    hosts => ["https://127.0.0.1:9200"]
     user => "elastic"
     password => ""
-    index => "suricate-%{+YYYY.MM.dd}"
+    cacert => "/etc/elasticsearch/certs/http_ca.crt"
+    ssl_certificate_verification => false
+    index => "%{[@metadata][targer_index]}"
   }
 }
 EOT
