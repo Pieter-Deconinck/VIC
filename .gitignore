@@ -15,3 +15,6 @@
 # Hidden Vagrant-directory
 .vagrant
 weekrapport/weekhours_*.pdf
+Vagrant/.vagrant/machines/DebianELK/virtualbox/id
+Vagrant/.vagrant/machines/DebianELK/virtualbox/index_uuid
+Vagrant/.vagrant/machines/DebianELK/virtualbox/vagrant_cwd
