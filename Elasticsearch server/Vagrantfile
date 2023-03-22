@@ -85,6 +85,6 @@ Vagrant.configure("2") do |config|
 end
 
 # Install ELK stack
-# Vagrant.configure("2") do |config|
-#  config.vm.provision "shell", path: "../Provisioning/FULL-ELK-stack.sh"
-# end
+ Vagrant.configure("2") do |config|
+  config.vm.provision "shell", path: "../Provisioning/Elasticsearch-server.sh"
+ end

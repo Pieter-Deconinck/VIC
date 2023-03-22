@@ -9,19 +9,7 @@ Then copy this token into kibana on localhost:5601
 And then get the verification code with  
 `sudo /usr/share/kibana/bin/kibana-verification-code`
 
-Open `/etc/kibana/kibana.yml`  
-remove https -> http
-
-open `/etc/elasticsearch/elasticsearch.yml`  
-Change http.ssl and transport.ssl to false  
-
 Add the password to `/etc/logstash/conf.d/beats.conf`
-
-reboot the vm
-
-Now just enable Filebeat and Metricbeats with  
-`sudo filebeat modules enable logstash`  
-`sudo metricbeat modules enable logstash`
 
 Create certs folder  
 `sudo mkdir /etc/logstash/certs`  
@@ -36,13 +24,17 @@ Link correctly in beats to the cert
 `ssl_certificate_verification => false`  
 `sudo chmod 666 /etc/logstash/conf.d/beats.conf`  
 
-Stop metricbeat and filebeat  
-`sudo systemctl stop filebeat`  
-`sudo systemctl stop metricbeat`  
+enable Filebeat and Metricbeats modules with  
+`sudo filebeat modules enable logstash`  
+`sudo metricbeat modules enable logstash`
 
 Change filebeat settings  
 `sudo nano /etc/filebeat/modules.d/logstash.yml`  
 change both false to true  
+
+reboot vm
+
+# Extra
 
 input {
   beats {
@@ -60,8 +52,6 @@ output {
     index => "suricate-%{+YYYY.MM.dd}"
   }
 }
-
-# Extra
 
 You can find the elasticsearch superuser password in /home/vagrant/installationELK.log
 

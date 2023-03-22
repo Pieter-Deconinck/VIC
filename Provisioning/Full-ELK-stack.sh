@@ -1,4 +1,8 @@
 #! /bin/sh
+#
+# Author: Pieter deconinck <pieter.deconinck@outlook.com>
+#
+# This script installs a FULL ELK stack VM. 
 
 set -o errexit # abort on nonzero exitstatus
 set -o nounset # abort on unbound variable

@@ -7,7 +7,6 @@
 set -o errexit # abort on nonzero exitstatus
 set -o nounset # abort on unbound variable
 
-
 # Vagrant gebruikt en bentubox debian 11
 # geinstalleerd
 
@@ -39,6 +38,15 @@ sudo sed -i 's/#cluster.name: my-application/cluster.name: elkcluster-1/g' /etc/
 systemctl restart elasticsearch
 
 ## CONFIGURING LOGSTASH
+# Create certs folder
+sudo mkdir /etc/logstash/certs
+
+# Copy cert 
+cp /etc/elasticsearch/certs/http_ca.crt /etc/logstash/certs/http_ca.crt
+
+# Make cert readable
+sudo chmod 666 /etc/logstash/conf.d/beats.conf
+
 # Configure beats.conf
 cat <<EOT >> /etc/logstash/conf.d/beats.conf
 input {
@@ -48,9 +56,12 @@ input {
 }
 output {
   elasticsearch {
-    hosts => ["http://127.0.0.1:9200"]
+    hosts => ["https://127.0.0.1:9200"]
     user => "elastic"
-    password => ""
+    password => "REPLACE THIS"
+    ssl => true
+    cacert => "/etc/logstash/certs/http_ca.crt"
+    ssl_certificate_verification => false
     index => "suricate-%{+YYYY.MM.dd}"
   }
 }
@@ -69,5 +80,9 @@ sudo sed -i 's/#hosts: \["localhost:5044"\]/hosts: \["localhost:5044"\]/' /etc/f
 
 sudo sed -i '/^\- type: filestream/,/^\s*paths:/ s/enabled: false/enabled: true/' /etc/filebeat/filebeat.yml
 
+# Enable Logstash module
+filebeat modules enable logstash
+
 # Start and enable filebeat
 systemctl enable --now filebeat
+
