@@ -88,5 +88,5 @@ end
 
 # Install ELK stack
 Vagrant.configure("2") do |config|
-  config.vm.provision "shell", path: "../Provisioning/setup.sh"
+  config.vm.provision "shell", path: "../Provisioning/FULL-ELK-stack.sh"
 end
