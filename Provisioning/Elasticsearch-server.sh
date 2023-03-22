@@ -22,7 +22,6 @@ echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://arti
 # Update debian packagemanger
  apt-get update
 
-
 # Install Elasticsearch logstash and filebeat
 apt install elasticsearch logstash filebeat -y > installation.log
 
@@ -45,7 +44,7 @@ sudo mkdir /etc/logstash/certs
 cp /etc/elasticsearch/certs/http_ca.crt /etc/logstash/certs/http_ca.crt
 
 # Make cert readable
-sudo chmod 666 /etc/logstash/conf.d/beats.conf
+sudo chmod 666 /etc/logstash/certs/http_ca.crt
 
 # Configure beats.conf
 cat <<EOT >> /etc/logstash/conf.d/beats.conf
