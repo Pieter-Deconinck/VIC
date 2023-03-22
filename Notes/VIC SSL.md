@@ -2,7 +2,7 @@
 
 
 Let the setup.sh script do its thing with vagrant up  
-Then vagrant ssh into the vm and input
+Then vagrant ssh into the vm and input  
 `sudo /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana`
 
 Then copy this token into kibana on localhost:5601  
@@ -19,17 +19,48 @@ Add the password to `/etc/logstash/conf.d/beats.conf`
 
 reboot the vm
 
-Now just enable Filebeat and Metricbeats with
-`sudo filebeat modules enable logstash`
+Now just enable Filebeat and Metricbeats with  
+`sudo filebeat modules enable logstash`  
 `sudo metricbeat modules enable logstash`
 
-Open kibana and go to check indexmanagement for suricate  
-then go to discover where you can create your own view
-for testing I used name: `test`  
-and the current date: `*3.14`
+Create certs folder  
+`sudo mkdir /etc/logstash/certs`  
 
-I then also made a view in the dasboard that with agent.type.keyword
-And that's it your all done and can explore your ELK stack now
+copy cert file from elasticsearch  
+`sudo su`  
+`cp /etc/elasticsearch/certs/http_ca.crt /etc/logstash/certs/http_ca.crt`  
+
+Link correctly in beats to the cert  
+`sudo nano /etc/logstash/conf.d/beats.conf`  
+`cacert => "/etc/logstash/certs/http_ca.crt"`  
+`ssl_certificate_verification => false`  
+`sudo chmod 666 /etc/logstash/conf.d/beats.conf`  
+
+Stop metricbeat and filebeat  
+`sudo systemctl stop filebeat`  
+`sudo systemctl stop metricbeat`  
+
+Change filebeat settings  
+`sudo nano /etc/filebeat/modules.d/logstash.yml`  
+change both false to true  
+
+input {
+  beats {
+    port => "5044"
+  }
+}
+output {
+  elasticsearch {
+    hosts => ["https://127.0.0.1:9200"]
+    user => "elastic"
+    password => "X6mUKpqN7VxJKqCh6OML"
+    ssl => true
+    cacert => "/etc/logstash/certs/http_ca.crt"
+    ssl_certificate_verification => false
+    index => "suricate-%{+YYYY.MM.dd}"
+  }
+}
+
 
 # Extra
 
@@ -54,34 +85,3 @@ https://www.elastic.co/guide/en/logstash/current/installing-logstash.html
 ttps://www.elastic.co/guide/en/kibana/current/deb.html
 
 
-
-# Extra extra
-
-create /etc/logstash/certs and copy the http_ca.crt file from elasticsearch
-and link it correctly in beats, also maybe sudo chmod 666 it
-then turn off filebeat and metricbeat (disable)
-and reboot. then turn on filebeat and metricbeat
-
-Metricbeat seems able to connect but filebeat doesnt 
-
-stopped both metricbeat and filebeat
-went into filebeat/modules.d/logstash.yml
-and enabled both settings in that file
-started up filebeat, it now seems to run fine
-
-input {
-  beats {
-    port => "5044"
-  }
-}
-output {
-  elasticsearch {
-    hosts => ["https://127.0.0.1:9200"]
-    user => "elastic"
-    password => "X6mUKpqN7VxJKqCh6OML"
-    ssl => true
-    cacert => "/etc/logstash/certs/http_ca.crt"
-    ssl_certificate_verification => false
-    index => "suricate-%{+YYYY.MM.dd}"
-  }
-}
