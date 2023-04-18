@@ -35,11 +35,11 @@ Vagrant.configure("2") do |config|
   # within the machine from a port on the host machine and only allow access
   # via 127.0.0.1 to disable public access
   # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
-   config.vm.network "forwarded_port", guest: 5601, host: 5601, host_ip: "127.0.0.1" # Kibana
-   config.vm.network "forwarded_port", guest: 9200, host: 9200, host_ip: "127.0.0.1" # Elec
-   config.vm.network "forwarded_port", guest: 5044, host: 5044, host_ip: "127.0.0.1" # logstash
-   config.vm.network "forwarded_port", guest: 9300, host: 9300, host_ip: "127.0.0.1" # testing beat
-   config.vm.network "forwarded_port", guest: 9600, host: 9600, host_ip: "127.0.0.1" # testing beat
+  # config.vm.network "forwarded_port", guest: 5601, host: 5601, host_ip: "127.0.0.1" # Kibana
+  # config.vm.network "forwarded_port", guest: 9200, host: 9200, host_ip: "127.0.0.1" # Elec
+  # config.vm.network "forwarded_port", guest: 5044, host: 5044, host_ip: "127.0.0.1" # logstash
+  # config.vm.network "forwarded_port", guest: 9300, host: 9300, host_ip: "127.0.0.1" # testing beat
+  # config.vm.network "forwarded_port", guest: 9600, host: 9600, host_ip: "127.0.0.1" # testing beat
 
    
    config.vm.network "private_network", ip: "192.168.50.10"

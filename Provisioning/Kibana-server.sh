@@ -2,7 +2,7 @@
 #
 # Author: Pieter deconinck <pieter.deconinck@outlook.com>
 #
-# This script installs a the Elasticsearch VM. 
+# This script installs a the Kibana VM. 
 
 set -o errexit # abort on nonzero exitstatus
 set -o nounset # abort on unbound variable
@@ -22,6 +22,21 @@ echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://arti
 # Update debian packagemanger
  apt-get update
 
- # Install Elasticsearch logstash and filebeat
+ # Install Kibana logstash and filebeat
 apt install kibana logstash filebeat -y > installation.log
+
+## CONFIGURING KIBANA
+# Configure kibana.yml
+# Allow connection from other then localhost
+#sudo sed -i 's/#server.host: "localhost"/server.host: "0.0.0.0"/' /etc/kibana/kibana.yml
+# uncomment server port
+#sed -i 's/#server.port:/server.port:/g' /etc/kibana/kibana.yml
+# uncomment and change elasticsearch host location
+#sudo sed -i 's/^#elasticsearch.hosts:/elasticsearch.hosts:/' /etc/kibana/kibana.yml
+#sed -i 's/http:\/\/localhost:9200/http:\/\/192.168.50.20:9200/g' /etc/kibana/kibana.yml
+
+# Start and enable kibana
+systemctl enable --now kibana
+
+
 
