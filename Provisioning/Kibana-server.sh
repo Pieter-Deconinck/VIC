@@ -23,17 +23,10 @@ echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://arti
  apt-get update
 
  # Install Kibana logstash and filebeat
-apt install kibana logstash filebeat -y > installation.log
+apt install kibana logstash filebeat nano -y > installation.log
 
 ## CONFIGURING KIBANA
-# Configure kibana.yml
-# Allow connection from other then localhost
-#sudo sed -i 's/#server.host: "localhost"/server.host: "0.0.0.0"/' /etc/kibana/kibana.yml
-# uncomment server port
-#sed -i 's/#server.port:/server.port:/g' /etc/kibana/kibana.yml
-# uncomment and change elasticsearch host location
-#sudo sed -i 's/^#elasticsearch.hosts:/elasticsearch.hosts:/' /etc/kibana/kibana.yml
-#sed -i 's/http:\/\/localhost:9200/http:\/\/192.168.50.20:9200/g' /etc/kibana/kibana.yml
+
 
 # Start and enable kibana
 systemctl enable --now kibana
