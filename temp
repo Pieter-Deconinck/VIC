@@ -1,0 +1,55 @@
+curl -X POST "localhost:9200/_security/api_key/grant?pretty" -H 'Content-Type: application/json' -d'
+{
+    "grant_type": "password",
+    "username": "kibana_system",
+    "password": "Pieter",
+    "run_as": "test_user",
+    "api_key": {
+        "name": "kibana_test",
+        "expiration": "1d",
+        "role_descriptors": {
+            "role-a": {
+                "cluster": [
+                    "*"
+                ],
+                "index": [
+                    {
+                        "names": [
+                            "*"
+                        ],
+                        "privileges": [
+                            "*"
+                        ]
+                    }
+                ]
+            },
+            "role-b": {
+                "cluster": [
+                    "*"
+                ],
+                "index": [
+                    {
+                        "names": [
+                            "*"
+                        ],
+                        "privileges": [
+                            "*"
+                        ]
+                    }
+                ]
+            }
+        },
+        "metadata": {
+            "application": "my-application",
+            "environment": {
+                "level": 1,
+                "trusted": true,
+                "tags": [
+                    "dev",
+                    "staging"
+                ]
+            }
+        }
+    }
+}
+'

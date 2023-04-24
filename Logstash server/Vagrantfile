@@ -14,10 +14,10 @@ Vagrant.configure("2") do |config|
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "bento/debian-11"
 
-  config.vm.define "DebianELKClient2"  
-  config.vm.hostname = "DebianELKClient2"  
+  config.vm.define "Logstash"  
+  config.vm.hostname = "Logstash"  
   config.vm.provider :virtualbox do |vb|
-      vb.name = "DebianELKClient2"
+      vb.name = "Logstash"
   end
 
   # Disable automatic box update checking. If you disable this, then
@@ -35,12 +35,18 @@ Vagrant.configure("2") do |config|
   # within the machine from a port on the host machine and only allow access
   # via 127.0.0.1 to disable public access
   # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+  # config.vm.network "forwarded_port", guest: 5601, host: 5606, host_ip: "127.0.0.1" # Kibana
+  # config.vm.network "forwarded_port", guest: 5044, host: 5044, host_ip: "127.0.0.1" # logstash
+
+
+   
+   config.vm.network "private_network", ip: "192.168.50.22"
+   # Added static IP for ELK webserver
+
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
   # config.vm.network "private_network", ip: "192.168.33.10"
-  config.vm.network "private_network", ip: "192.168.50.6"
-  # Added static IP for ELK client
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -62,8 +68,9 @@ Vagrant.configure("2") do |config|
   #   vb.gui = true
   #
   #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
+  #   vb.memory = "4096"
+  #   vb.cpus = "3"
+  #  end
   #
   # View the documentation for the provider you are using for more
   # information on available options.

@@ -1,0 +1,36 @@
+curl -X POST "localhost:9200/_security/api_key/grant?pretty" -H 'Content-Type: application/json' -d'
+{
+    "grant_type": "password",
+    "username": "elastic",
+    "password": "0I=VY06BVQxdTx34P_jl",
+    "run_as": "test_user",
+    "api_key": {
+        "name": "kibana_system",
+    }
+}'
+
+
+curl -X POST "localhost:9200/_security/api_key/grant?pretty" -H 'Content-Type: application/json' -d'
+{
+    "grant_type": "password",
+    "username": "elastic",
+    "password": "0I=VY06BVQxdTx34P_jl",
+    "run_as": "plzwork",
+    "api_key": {
+        "name": "plzwork_key",
+    }
+}
+'
+
+
+curl -X POST "localhost:9200/_security/api_key/grant?pretty" -H 'Content-Type: application/json' -d'
+{
+    "grant_type": "password",
+    "username": "test_admin",
+    "password": "x-pack-test-password",
+    "run_as": "test_user",
+    "api_key": {
+        "name": "another-api-key"
+    }
+}
+'

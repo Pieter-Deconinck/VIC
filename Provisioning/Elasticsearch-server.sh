@@ -23,7 +23,7 @@ echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://arti
  apt-get update
 
 # Install Elasticsearch logstash and filebeat
-apt install elasticsearch kibana logstash filebeat -y > installation.log
+apt install elasticsearch -y > installation.log
 
 ## CONFIGURING ELASTICSEARCH
 # Starting elasticsearch
