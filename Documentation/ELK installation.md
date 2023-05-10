@@ -13,6 +13,10 @@ VM's structure:
 1 Logstash VM: 192.168.50.22  
 1 Elkclient VM: 192.168.50.23
 
+Sanbox login in vic:
+
+ssh vicuser@10.14.20.20
+
 Filebeat will be used to log logs on client and send them to Logstash  
 
 ## Elasticsearch Server  
@@ -104,7 +108,7 @@ elasticsearch.username: "kibana_system"
 elasticsearch.password: "Pieter"
 
 -# Path for elasticsearch certificate kibana uses to verify authenticity
--# elasticsearch.ssl.certificateAuthorities: [/var/lib/kibana/certs/ca_elastic.crt]
+-# elasticsearch.ssl.certificateAuthorities: [/var/lib/kibana/certs/http_ca.crt]
 
 -# Path for elasticsearch certificate kibana uses to verify authenticity
 elasticsearch.ssl.verificationMode: "none"
@@ -173,7 +177,7 @@ Install Logstash:
 `apt install logstash -y > installationLogstash.log`  
 
 Start and enable Logstash:  
-`systemctl enable --now Logstash`  
+`systemctl enable --now logstash`  
 
 **Configuring Logstash**
 
@@ -195,11 +199,26 @@ Create beats.conf:
         }
     }
 
-Restart the service or reboot the vm
+**Optional: Use cert to confirm ssl to elastic**
+
+Create cert directory:  
+`sudo mkdir /var/lib/logstash/certs`  
+`sudo chown vagrant:logstash /var/lib/logstash/certs`  
+`sudo chmod 770 /var/lib/logstash/certs`  
+
+Now copy the http_ca.crt from Elastichsearch to logstash  
+`scp /etc/elasticsearch/certs/http_ca.crt vagrant@192.168.50.22:/home/vagrant`  
+
+Back in Logstash:  
+`sudo chown logstash:logstash /var/lib/logstash/certs/http_ca.crt`  
+`sudo chmod 644 /var/lib/logstash/certs/http_ca.crt`  
+
+Change ssl verification method:  
+Open `/etc/logstash/conf.d/beats.conf`  
+add:`ssl => true` 
+    `cacert => "/var/lib/logstash/certs/http_ca.crt"`  
 
 ## Filebeat client
-
-TODO: Filebeat installed on Logstash server works, but not seperately installed alone as a client
 
 **Install Filebeat**  
 Download and install the public signing key:  
@@ -218,7 +237,7 @@ Install Filebeat:
 `apt install filebeat -y > installationFilebeat.log`  
 
 Start and enable Filebeat:  
-`systemctl enable --now Logstash`  
+`systemctl enable --now filebeat`  
 
 **Configuring Filebeat**  
 Enable logstash module:  
@@ -228,3 +247,82 @@ Change Filebeat settings:
 `sudo nano /etc/filebeat/modules.d/logstash.yml`  
 
 Restart the service or reboot the vm
+
+
+**Optional: Create and require SSL from filebeat client**
+
+ON LOGSTASH
+Install openssl `sudo apt-get install openssl`  
+
+Navigate to `/var/lib/logstash/certs`  
+
+Generate needed SSL/Cert files
+`openssl genrsa -out ca.key 2048`  
+`openssl req -x509 -new -nodes -key ca.key -sha256 -days 1825 -out ca.crt`  
+`openssl genrsa -out logstash.key 2048`  
+`openssl req -new -key logstash.key -out logstash.csr`  
+`openssl x509 -req -in logstash.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out logstash.crt -days 1825 -sha256`  
+
+Adjust logstash config:
+
+    input {
+            beats {
+                    port => "5044"
+                    ssl => "true"
+                    ssl_certificate_authorities => ["/var/lib/logstash/certs/ca.crt"]
+                    ssl_certificate => "/var/lib/logstash/certs/logstash.crt"
+                    ssl_key => "/var/lib/logstash/certs/logstash.key"
+                    ssl_verify_mode => "force_peer"
+            }
+    }
+
+Restart logstash
+`sudo systemctl restart logstash`  
+
+Move the needed files from Logstash to Filebeat client  
+`scp ca.crt vagrant@192.168.50.30:/home/vagrant`  
+`scp logstash.crt vagrant@192.168.50.30:/home/vagrant`  
+`scp logstash.key vagrant@192.168.50.30:/home/vagrant`  
+
+ON FILEBEAT
+Move these files to the correct directory  
+`mv ca.crt /etc/filebeat/certs`  
+`mv logstash.crt /etc/filebeat/certs`  
+`mv logstash.key /etc/filebeat/certs`  
+
+Adjust logstash output in filebeat
+
+    output.logstash:
+      # The Logstash hosts
+      hosts: ["192.168.50.22:5044"]
+
+      # Optional SSL. By default is off.
+      # List of root certificates for HTTPS server verifications
+      ssl.certificate_authorities: ["/etc/filebeat/certs/ca.crt"]
+
+      # Certificate for SSL client authentication
+      ssl.certificate: "/etc/filebeat/certs/logstash.crt"
+
+      # Client Certificate Key
+      ssl.key: "/etc/filebeat/certs/logstash.key"
+
+Restart filebeat
+`sudo systemctl restart filebeat`  
+
+ON FILEBEAT
+ENABLE LOGGING in /etc/filebeat/filebeat.yml
+` # Change to true to enable this input configuration.
+  enabled: true`
+
+ON LOGSTASH  
+`cd /var/lib/logstash/certs/`  
+`sudo chown logstash:logstash *`  
+
+
+
+
+Extra links:
+
+https://www.elastic.co/guide/en/kibana/master/settings.html
+https://www.elastic.co/guide/en/logstash/master/plugins-inputs-beats.html#plugins-inputs-beats-ssl_key
+https://www.elastic.co/guide/en/beats/filebeat/current/configuring-ssl-logstash.html
