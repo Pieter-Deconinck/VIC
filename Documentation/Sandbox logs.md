@@ -32,3 +32,9 @@ Created additional pipeline for suricate so they dont get mashed into 1
 - pipeline.id: suricate
 
   path.config: "/etc/logstash/conf.d/beats.conf"
+
+
+To increase XFS partition size while mounted
+`sudo growpart /dev/sda 2`
+`sudo xfs_growfs /`
+/ being the mount point (doublecheck with df -h)

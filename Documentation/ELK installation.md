@@ -8,10 +8,10 @@ Debian
 
 VM's structure:  
 
-1 Elasticsearch VM: 192.168.50.20  
-1 Kibana VM: 192.168.50.21  
-1 Logstash VM: 192.168.50.22  
-1 Elkclient VM: 192.168.50.23
+1 Elasticsearch VM: 10.14.20.20  
+1 Kibana VM: 10.14.20.21  
+1 Logstash VM: 10.14.20.22  
+1 Elkclient VM: 10.14.20.23
 
 Sanbox login in vic:
 
